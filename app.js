@@ -64,13 +64,13 @@ passport.use(new InstagramStrategy({
     "ig_id": profile.id
    }, function(err, user) {
       if (err) {
-        return done(err); 
+        return done(err);
       }
-      
+
       //didnt find a user
       if (!user) {
         newUser = new models.User({
-          name: profile.username, 
+          name: profile.username,
           ig_id: profile.id,
           ig_access_token: accessToken
         });
@@ -123,16 +123,16 @@ app.set('port', process.env.PORT || 3000);
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { 
-    return next(); 
+  if (req.isAuthenticated()) {
+    return next();
   }
   res.redirect('/login');
 }
 
 
 function ensureAuthenticatedInstagram(req, res, next) {
-  if (req.isAuthenticated() && !!req.user.ig_id) { 
-    return next(); 
+  if (req.isAuthenticated() && !!req.user.ig_id) {
+    return next();
   }
   res.redirect('/login');
 }
@@ -171,7 +171,7 @@ app.get('/igphotos', ensureAuthenticatedInstagram, function(req, res){
           });
           res.render('photos', {photos: imageArr});
         }
-      }); 
+      });
     }
   });
 });
@@ -181,49 +181,65 @@ app.get('/igMediaCounts', ensureAuthenticatedInstagram, function(req, res){
   query.findOne(function (err, user) {
     if (err) return err;
     if (user) {
-      Instagram.users.follows({ 
+      Instagram.users.follows({
         user_id: user.ig_id,
         access_token: user.ig_access_token,
         complete: function(data) {
           // an array of asynchronous functions
           var asyncTasks = [];
           var mediaCounts = [];
-           
+
           data.forEach(function(item){
             asyncTasks.push(function(callback){
               // asynchronous function!
-              Instagram.users.info({ 
+              Instagram.users.info({
                   user_id: item.id,
                   access_token: user.ig_access_token,
                   complete: function(data) {
                     mediaCounts.push(data);
                     callback();
                   }
-                });            
+                });
             });
           });
-          
+
           // Now we have an array of functions, each containing an async task
           // Execute all async tasks in the asyncTasks array
           async.parallel(asyncTasks, function(err){
             // All tasks are done now
             if (err) return err;
-            return res.json({users: mediaCounts});        
+            return res.json({users: mediaCounts});
           });
         }
-      });   
+      });
+    }
+  });
+});
+
+app.get('/igSelfMedia', ensureAuthenticatedInstagram, function(req, res){
+  var query  = models.User.where({ ig_id: req.user.ig_id });
+  query.findOne(function (err, user) {
+    if (err) return err;
+    if (user) {
+      Instagram.users.recent({
+        user_id: user.ig_id,
+        access_token: user.ig_access_token,
+        complete: function(data) {
+          return res.json({media: data});
+        }
+      });
     }
   });
 });
 
 app.get('/visualization', ensureAuthenticatedInstagram, function (req, res){
   res.render('visualization');
-}); 
+});
 
 
 app.get('/c3visualization', ensureAuthenticatedInstagram, function (req, res){
   res.render('c3visualization');
-}); 
+});
 
 app.get('/auth/instagram',
   passport.authenticate('instagram'),
@@ -232,7 +248,7 @@ app.get('/auth/instagram',
     // function will not be called.
   });
 
-app.get('/auth/instagram/callback', 
+app.get('/auth/instagram/callback',
   passport.authenticate('instagram', { failureRedirect: '/login'}),
   function(req, res) {
     res.redirect('/account');
