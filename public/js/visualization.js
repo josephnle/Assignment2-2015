@@ -2,6 +2,10 @@ var margin = {top: 20, right: 20, bottom: 100, left: 40};
 var width = 960 - margin.left - margin.right;
 var height = 500 - margin.top - margin.bottom;
 
+/* Initialize tooltip */
+var tip = d3.tip().attr('class', 'd3-tip')
+  .html(function(d) { return 'Count: ' + d.counts.media; });
+
 //define scale of x to be from 0 to width of SVG, with .1 padding in between
 var scaleX = d3.scale.ordinal()
   .rangeRoundBands([0, width], .1);
@@ -69,6 +73,9 @@ d3.json('/igMediaCounts', function(error, data) {
     .style("text-anchor", "end")
     .text("Number of Photos");
 
+  // Invoke tip
+  svg.call(tip);
+
   //set up bars in bar graph
   svg.selectAll(".bar")
     .data(data.users)
@@ -77,5 +84,7 @@ d3.json('/igMediaCounts', function(error, data) {
     .attr("x", function(d) { return scaleX(d.username); })
     .attr("width", scaleX.rangeBand())
     .attr("y", function(d) { return scaleY(d.counts.media); })
-    .attr("height", function(d) { return height - scaleY(d.counts.media); });
+    .attr("height", function(d) { return height - scaleY(d.counts.media); })
+    .on('mouseover', tip.show)
+    .on('mouseout', tip.hide);
 });
