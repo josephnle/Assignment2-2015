@@ -32,18 +32,6 @@ var svg = d3.select("#chart").append("svg")
 
 //get json object which contains media counts
 d3.json('/igMediaCounts', function(error, data) {
-  // Sort Data
-  data.users.sort(function(a, b) {
-    if (a.counts.media > b.counts.media) {
-      return 1;
-    }
-    if (a.counts.media < b.counts.media) {
-      return -1;
-    }
-    // a must be equal to b
-    return 0;
-  });
-
   //set domain of x to be all the usernames contained in the data
   scaleX.domain(data.users.map(function(d) { return d.username; }));
   //set domain of y to be from 0 to the maximum media count returned
@@ -88,3 +76,44 @@ d3.json('/igMediaCounts', function(error, data) {
     .on('mouseover', tip.show)
     .on('mouseout', tip.hide);
 });
+
+function sortMediaCounts() {
+  d3.json('/igMediaCounts', function(error, data) {
+    // Sort Data
+    data.users.sort(function(a, b) {
+      if (a.counts.media > b.counts.media) {
+        return 1;
+      }
+      if (a.counts.media < b.counts.media) {
+        return -1;
+      }
+      // a must be equal to b
+      return 0;
+    });
+
+    //set domain of x to be all the usernames contained in the data
+    scaleX.domain(data.users.map(function(d) { return d.username; }));
+    //set domain of y to be from 0 to the maximum media count returned
+    scaleY.domain([0, d3.max(data.users, function(d) { return d.counts.media; })]);
+
+    var svg = d3.select('#chart');
+
+    svg.selectAll(".bar")
+      .data(data.users)
+      .transition()
+      .duration(750)
+      .attr("x", function(d) { return scaleX(d.username); })
+      .attr("width", scaleX.rangeBand())
+      .attr("y", function(d) { return scaleY(d.counts.media); })
+      .attr("height", function(d) { return height - scaleY(d.counts.media); });
+    svg.select(".x.axis") // change the x axis
+      .attr("transform", "translate(0," + height + ")") //move x-axis to the bottom
+      .call(xAxis)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em");
+  });
+
+
+}
