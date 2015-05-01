@@ -99,6 +99,47 @@ passport.use(new InstagramStrategy({
   }
 ));
 
+passport.use(new FoursquareStrategy({
+    clientID: FOURSQUARE_CLIENT_ID,
+    clientSecret: FOURSQUARE_CLIENT_SECRET,
+    callbackURL: FOURSQUARE_CALLBACK_URL
+  },
+  function(accessToken, refreshToken, profile, done) {
+    if (err) {
+      return done(err);
+    }
+
+    //didnt find a user
+    if (!user) {
+      newUser = new models.User({
+        name: profile.firstName + profile.lastName,
+        fs_id: profile.id,
+        fs_access_token: accessToken
+      });
+
+      newUser.save(function(err) {
+        if(err) {
+          console.log(err);
+        } else {
+          console.log('user: ' + newUser.name + " created.");
+        }
+        return done(null, newUser);
+      });
+    } else {
+      //update user here
+      user.fs_access_token = accessToken;
+      user.save();
+      process.nextTick(function () {
+        // To keep the example simple, the user's Foursquare profile is returned to
+        // represent the logged-in user.  In a typical application, you would want
+        // to associate the Instagram account with a user record in your database,
+        // and return that user instead.
+        return done(null, user);
+      });
+    }
+  }
+));
+
 
 //Configures the Template engine
 app.engine('handlebars', handlebars({defaultLayout: 'layout'}));
@@ -132,6 +173,13 @@ function ensureAuthenticated(req, res, next) {
 
 function ensureAuthenticatedInstagram(req, res, next) {
   if (req.isAuthenticated() && !!req.user.ig_id) {
+    return next();
+  }
+  res.redirect('/login');
+}
+
+function ensureAuthenticatedFoursquare(req, res, next) {
+  if (req.isAuthenticated() && !!req.user.fs_id) {
     return next();
   }
   res.redirect('/login');
@@ -250,6 +298,19 @@ app.get('/auth/instagram',
 
 app.get('/auth/instagram/callback',
   passport.authenticate('instagram', { failureRedirect: '/login'}),
+  function(req, res) {
+    res.redirect('/account');
+  });
+
+app.get('/auth/foursquare',
+  passport.authenticate('foursquare'),
+  function(req, res){
+    // The request will be redirected to Instagram for authentication, so this
+    // function will not be called.
+  });
+
+app.get('/auth/foursquare/callback',
+  passport.authenticate('foursquare', { failureRedirect: '/login'}),
   function(req, res) {
     res.redirect('/account');
   });

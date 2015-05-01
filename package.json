@@ -15,9 +15,13 @@
     "express-handlebars": "1.2.2",
     "express-session": "1.10.4",
     "instagram-node-lib": "^0.1.1",
+    "install": "^0.1.8",
     "mongoose": "^4.0.1",
     "mongoose-findorcreate": "^0.1.2",
+    "node-foursquare": "^0.3.0",
+    "npm": "^2.9.0",
     "passport": "0.2.1",
+    "passport-foursquare": "^1.0.0",
     "passport-instagram": "0.1.2"
   },
   "engines": {
