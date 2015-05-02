@@ -27,22 +27,31 @@
 <script src="js/d3.min.js"></script>
 <script src="js/d3.tip.js"></script>
 <script src="js/c3.min.js"></script>
+<script src="js/main.js"></script>
 
 <header>
   <div class="ui secondary pointing menu">
-    <a href="/account" class="item">
-      Home
-    </a>
-    <a href="/c3visualization" class="item">
-      C3 Visualizations
-    </a>
-    <a href="/visualization" class="item">
-      D3 Visualizations
-    </a>
+      {{#if user}}
+        <a href="/account" class="item" id="homeLink">
+          Home
+        </a>
+        <a href="/c3visualization" class="item" id="c3Link">
+          C3 Visualizations
+        </a>
+        <a href="/visualization" class="item" id="d3Link">
+          D3 Visualizations
+        </a>
+      {{else}}
+        <a href="/" class="ui active item">
+          Login
+        </a>
+      {{/if}}
     <div class="right menu">
-      <a class="ui item">
-        Logout
-      </a>
+        {{#if user}}
+          <a href="/logout" class="ui item">
+            Logout
+          </a>
+        {{/if}}
     </div>
   </div>
 </header>

@@ -112,6 +112,12 @@ app.use(session({ secret: 'keyboard cat',
                   resave: true}));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(function(req, res, next) {
+  if(req.isAuthenticated()){
+    res.locals.user = req.user; // This is the important line
+  }
+  return next();
+});
 
 //set environment ports and start application
 app.set('port', process.env.PORT || 3000);
