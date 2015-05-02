@@ -24,6 +24,8 @@ function generateFiltersVisualization()
 
 //get json object which contains media counts
   d3.json('/igSelfMedia', function(error, data) {
+    $('#filtersChartLoader').remove();
+
     // Prepare data
     var filterCounts = [];
 

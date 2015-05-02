@@ -34,61 +34,65 @@ function generateMediaCountVisualization() {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 //get json object which contains media counts
-  d3.json('/igMediaCounts', function(error, data) {
-    //set domain of x to be all the usernames contained in the data
-    scaleX.domain(data.users.map(function(d) {
-      return d.username;
-    }));
-    //set domain of y to be from 0 to the maximum media count returned
-    scaleY.domain([0, d3.max(data.users, function(d) {
-      return d.counts.media;
-    })]);
+  d3.json('/igMediaCounts')
+    .on('load', function(data) {
+      $('#chartLoader').remove();
 
-    //set up x axis
-    svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")") //move x-axis to the bottom
-      .call(xAxis)
-      .selectAll("text")
-      .style("text-anchor", "end")
-      .attr("dx", "-.8em")
-      .attr("dy", ".15em")
-      .attr("transform", function(d) {
-        return "rotate(-65)"
-      });
+      //set domain of x to be all the usernames contained in the data
+      scaleX.domain(data.users.map(function(d) {
+        return d.username;
+      }));
+      //set domain of y to be from 0 to the maximum media count returned
+      scaleY.domain([0, d3.max(data.users, function(d) {
+        return d.counts.media;
+      })]);
 
-    //set up y axis
-    svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Number of Photos");
+      //set up x axis
+      svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")") //move x-axis to the bottom
+        .call(xAxis)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", function(d) {
+          return "rotate(-65)"
+        });
 
-    // Invoke tip
-    svg.call(tip);
+      //set up y axis
+      svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Number of Photos");
 
-    //set up bars in bar graph
-    svg.selectAll(".bar")
-      .data(data.users)
-      .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) {
-        return scaleX(d.username);
-      })
-      .attr("width", scaleX.rangeBand())
-      .attr("y", function(d) {
-        return scaleY(d.counts.media);
-      })
-      .attr("height", function(d) {
-        return height - scaleY(d.counts.media);
-      })
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide);
-  });
+      // Invoke tip
+      svg.call(tip);
+
+      //set up bars in bar graph
+      svg.selectAll(".bar")
+        .data(data.users)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) {
+          return scaleX(d.username);
+        })
+        .attr("width", scaleX.rangeBand())
+        .attr("y", function(d) {
+          return scaleY(d.counts.media);
+        })
+        .attr("height", function(d) {
+          return height - scaleY(d.counts.media);
+        })
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
+    })
+    .get();
 }
 
 generateMediaCountVisualization();

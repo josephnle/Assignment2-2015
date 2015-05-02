@@ -9,7 +9,11 @@
            value="Sort Media Counts"
            onclick="sortMediaCounts()" />
 
-    <div id="chart"></div>
+    <div id="chart">
+      <div class="ui active dimmer" id="chartLoader">
+        <div class="ui text loader">Loading</div>
+      </div>
+    </div>
 
     <script src="js/visualization.js"></script>
 
@@ -18,7 +22,11 @@
   <div class="ui segment">
     <h2>Your Filter Usage</h2>
 
-    <div id="filterChart"></div>
+    <div id="filterChart">
+      <div class="ui active dimmer" id="filtersChartLoader">
+        <div class="ui text loader">Loading</div>
+      </div>
+    </div>
     <script src="js/filtervisualization.js"></script>
   </div>
 </div>
