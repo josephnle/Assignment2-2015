@@ -1,6 +1,8 @@
 (function() {
   $.getJSON( '/igMediaCounts')
     .done(function( data ) {
+      $('#countChartLoader').remove();
+
       var yCounts = data.users.map(function(item){
         return item.counts.media;
       });

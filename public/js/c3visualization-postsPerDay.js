@@ -1,6 +1,8 @@
 (function() {
   $.getJSON( '/igSelfMedia')
     .done(function( data ) {
+      $('#postsChartLoader').remove();
+
       var postsPerDay = [];
 
       data.media.forEach(function(item) {

@@ -1,11 +1,23 @@
 <div class="ui column">
-  <div class="ui segment">
-    <h2> Media Count of Your Instagram Followers using C3JS </h2>
-    <div id="chart"></div>
+  <h1>C3 Visualizations</h1>
 
-      <h2>Your Instagram Posts per Day</h2>
-    <div id="postsPerDayChart"></div>
+  <div class="ui segment">
+    <h2> Media Count of Your Instagram Followers</h2>
+    <div id="chart">
+      <div class="ui active dimmer" id="countChartLoader">
+        <div class="ui text loader">Loading</div>
+      </div>
+    </div>
   </div>
+
+    <div class="ui segment">
+      <h2>Your Instagram Posts per Day</h2>
+      <div id="postsPerDayChart">
+        <div class="ui active dimmer" id="postsChartLoader">
+          <div class="ui text loader">Loading</div>
+        </div>
+      </div>
+    </div>
 
 
   <script src="js/c3visualization.js"></script>
